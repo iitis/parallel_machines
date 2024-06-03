@@ -1,4 +1,5 @@
 import pickle
+import argparse
 
 from parallel_machines import Job, Machine, Problem
 from parallel_machines import Variables, Implement_QUBO
@@ -28,7 +29,6 @@ def case1():
 
 
 def case2():
-    
     """ tmax = 8  #m = 2, #j = 6"""
 
     P = Problem(tmax = 8)
@@ -51,6 +51,7 @@ def case2():
 
 
 def case3():
+    """ tmax = 12  #m = 3, #j = 10"""
     
     P = Problem(tmax = 12)
     machines_list = (Machine(1),Machine(2), Machine(3))
@@ -76,7 +77,7 @@ def case3():
     return P
 
 def case4():
-    
+    """ tmax = 20  #m = 3, #j = 12"""
     P = Problem(tmax = 20)
     machines_list = (Machine(1),Machine(2), Machine(3))
     P.add_machines(machines_list)
@@ -106,45 +107,77 @@ def case4():
 
 if __name__ == "__main__":
 
-        case = 1
-        save = True
-        no_runs = 4
-        simulate = True
+    save = True
 
-        psum=100
-        psum=250
-        ppair=100
+    parser = argparse.ArgumentParser("mode of problem solving: computation /  output analysis")
+
+    parser.add_argument(
+        "--case",
+        type=int,
+        help="problem case",
+        default=1,
+    )
+
+    parser.add_argument(
+        "--sim",
+        type=bool,
+        help="if True simulated annealing (via DWave software), if False real annealing",
+        default=True,
+    )
+
+    parser.add_argument(
+        "--no_runs",
+        type=int,
+        help="number of runs on the simulated or real device",
+        default=4,
+    )
+
+    parser.add_argument(
+        "--psum",
+        type=float,
+        help="sum penalty",
+        default=100.,
+    )
+
+    parser.add_argument(
+        "--ppair",
+        type=float,
+        help="pair penalty",
+        default=100.,
+    )
+
+    args = parser.parse_args()
         
-        if case == 1:
-            P = case1()
+    if args.case == 1:
+        P = case1()
 
-        if case == 2:
-            P = case2()
+    if args.case == 2:
+        P = case2()
 
-        if case == 3:
-            P = case3()
+    if args.case == 3:
+        P = case3()
 
-        if case == 4:
-            P = case4()
+    if args.case == 4:
+        P = case4()
 
             
             
-        Vars = Variables(P)
-        print("QUBO size = ", Vars.size)
-        Q = Implement_QUBO(psum=psum, ppair=ppair, objective=lambda tau : tau**2)
-        Q.make_QUBO(Vars, P)
+    Vars = Variables(P)
+    print("QUBO size = ", Vars.size)
+    Q = Implement_QUBO(psum=args.psum, ppair=args.ppair, objective=lambda tau : tau**2)
+    Q.make_QUBO(Vars, P)
 
-        file = f"parallel_machines/solutions/sim_case{case}.pkl"
-        if save:
-            solutions = solve_on_DWave(Q.qubo_terms, no_runs = no_runs, simulate = simulate)
+    file = f"parallel_machines/solutions/sim_case{args.case}.pkl"
+    if save:
+        solutions = solve_on_DWave(Q.qubo_terms, no_runs = args.no_runs, simulate = args.sim)
 
-            with open(file, 'wb') as fp:
-                pickle.dump(solutions, fp)
+        with open(file, 'wb') as fp:
+            pickle.dump(solutions, fp)
 
-        with open(file, 'rb') as fp:
-            solutions = pickle.load(fp)
+    with open(file, 'rb') as fp:
+        solutions = pickle.load(fp)
 
-        check_solutions(Vars, P, Q, solutions.record)
+    check_solutions(Vars, P, Q, solutions.record, print_not_feasible = False)
 
 
         

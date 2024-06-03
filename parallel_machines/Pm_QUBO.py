@@ -185,7 +185,7 @@ class Implement_QUBO():
     
 
     def objective(self, Vars, P):
-        """ add ovjective terms to QUBO terms """
+        """ add objective terms to QUBO terms """
         for k, (t,m,j) in Vars.multiindices.items():
             weight = P.jobs[j].priority
             penalty = weight*self.obj(t + P.jobs[j].process_t - P.jobs[j].release_t)
@@ -253,7 +253,7 @@ def solve_on_DWave(Q:dict, no_runs:int, simulate:bool):
     return sampleset
 
 
-def check_solutions(Vars, P, Q:dict, solutions):
+def check_solutions(Vars, P, Q:dict, solutions, print_not_feasible:bool = False):
     """ check solutions """
     for (sol, energy, occ) in solutions:
             
@@ -263,11 +263,11 @@ def check_solutions(Vars, P, Q:dict, solutions):
         broken_sum = Q.check_feasibility_sum_constraint(Vars, P)
 
         if broken_pairs == broken_sum == 0:
-            print(" ######################  feasible #########################")
+            print(" ######################  feasible solution #########################")
             print_schedule(Vars, P)
             print("objective", Q.compute_objective(Vars, P))
             print("energy", energy)
-        else:
+        elif print_not_feasible:
             print(" ########################### not feasible ########################")
             print("broken pair constraint", broken_pairs)
             print("broken sum constraint", broken_sum)
