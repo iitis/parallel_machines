@@ -169,7 +169,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--exp",
-        help="if True uses expotencial objective",
+        help="if True uses exponential objective",
         default=False,
         action=argparse.BooleanOptionalAction,
     )
