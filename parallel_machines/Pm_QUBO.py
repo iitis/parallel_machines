@@ -13,7 +13,7 @@ class Job():
         self.release_t = release_t
         self.process_t = process_t
         self.priority = priority
-        # initialise with non-physical values
+        # initialize with non-physical values
         self.start = -1
         self.end = -1
         self.machine = 0
@@ -38,7 +38,7 @@ class Machine():
 
 
 class Problem():
-    """ class of the scheduling problem"""
+    """ class of the scheduling problem """
     def __init__(self, tmax):
         self.tmax = tmax
         self.no_jobs = 0
@@ -68,7 +68,7 @@ class Problem():
 
 
 
-# QUBO varialbes
+# QUBO variables
 
 class QUBO_var():
     """ QUBO variable """
@@ -78,7 +78,7 @@ class QUBO_var():
         self.m = m
         self.j = j
         self.id = id
-        # initialise with non-physical values
+        # initialize with non-physical values
         self.value = -1
 
 
@@ -140,7 +140,7 @@ class Implement_QUBO():
     def add_qubo_term(self, inds:tuple, value):
         """ 
         add QUBO term (value) to Q[inds] = Q[i,i']
-        create new entry if no entry, or add to existing entry
+        create a new entry if there is no entry, or add to an existing entry
         """
         if inds in self.qubo_terms:
             self.qubo_terms[inds] += value
@@ -192,7 +192,7 @@ class Implement_QUBO():
             self.add_qubo_term((k, k), penalty)
 
     def make_QUBO(self, Vars, P):
-        """ make QUBO, initialize, then add terms of constrains and objective """
+        """ make QUBO, initialize, then add terms of constraints and objective """
         self.sum_constraint(Vars)
         self.pair_constraint(Vars, P)
         self.objective(Vars, P)
@@ -200,7 +200,7 @@ class Implement_QUBO():
 
     def chech_feasibility_pair_constraint(self, Vars, P) -> int:
         """ 
-        returns int, number of broken pair constraints of the solution in Vars and jobs in P
+        returns an int, number of broken pair constraints of the solution in Vars and jobs in P
         returns 0 if no pair constraints are broken
         """
         broken_constraints = 0
@@ -208,13 +208,13 @@ class Implement_QUBO():
             if Vars.q_vars[k].value == Vars.q_vars[kp].value == 1:
                 broken_constraints += 1
 
-        # each constraint is counted twice due to symmetry
+        # Each constraint is counted twice due to symmetry
         return broken_constraints//2
     
 
     def check_feasibility_sum_constraint(self, Vars, P) -> int:
         """
-        returns int, number of broken sum constraints of the solution in Vars and jobs in P
+        returns an int, number of broken sum constraints of the solution in Vars and jobs in P
         returns 0 if no sum constraints are broken
         """
         broken_constraints = 0
