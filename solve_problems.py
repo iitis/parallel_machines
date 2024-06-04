@@ -146,6 +146,13 @@ if __name__ == "__main__":
         default=100.,
     )
 
+    parser.add_argument(
+        "--show_all",
+        type=bool,
+        help="if True show all solutions, else show only feasible",
+        default=False,
+    )
+
     args = parser.parse_args()
         
     if args.case == 1:
@@ -177,7 +184,7 @@ if __name__ == "__main__":
     with open(file, 'rb') as fp:
         solutions = pickle.load(fp)
 
-    check_solutions(Vars, P, Q, solutions.record, print_not_feasible = False)
+    check_solutions(Vars, P, Q, solutions.record, print_not_feasible = args.show_all)
 
 
         
