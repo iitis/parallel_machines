@@ -30,7 +30,7 @@ python3 solve_problems.py --case 4 --no_runs 25 --psum 200 --ppair 100 --show_al
 
 ```
 
-to read only file:
+to read file with data only:
 
 ```
 python3 solve_problems.py --case 4 --no_runs 25 --psum 200 --ppair 100 --no_compute
