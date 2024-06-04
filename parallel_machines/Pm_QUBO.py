@@ -1,7 +1,12 @@
 # make QUBO for the Pm problem
 
 from copy import deepcopy
+import itertools
 import neal
+
+from dwave.system import EmbeddingComposite, DWaveSampler
+from dwave.system.composites import FixedEmbeddingComposite
+from minorminer import find_embedding
 
 # Problem input
 
@@ -242,35 +247,87 @@ class Implement_QUBO():
 
 # D-Wave and solutions
 
-def solve_on_DWave(Q:dict, no_runs:int, simulate:bool):
+# https://docs.ocean.dwavesys.com/projects/neal/en/latest/
+
+def solve_on_DWave(Q:dict, no_runs:int, real:bool, at:float = 0.):
     """ Solve  QUBO in Q on the D-Wave  """
-    if simulate:
+    if not real:
         s = neal.SimulatedAnnealingSampler()
         sampleset = s.sample_qubo(
             Q, beta_range = (0.01, 10), num_sweeps = 200,
             num_reads = no_runs, beta_schedule_type="geometric"
         )
+    else:
+
+        solver = DWaveSampler(solver="Advantage_system4.1")
+
+        __, target_edgelist, _ = solver.structure
+
+        emb = find_embedding(Q, target_edgelist, verbose=1)
+
+        no_logical = len(emb.keys())
+        physical_qbits_lists = list(emb.values())
+        physical_qbits_list = list(itertools.chain(*physical_qbits_lists))
+        no_physical =  len( set(physical_qbits_list) )
+        
+        if no_logical < 70:
+            print(emb)
+        
+        print("logical qbits = ", no_logical)
+
+        print("physical qbits", no_physical)
+
+        sampler = FixedEmbeddingComposite(solver, emb)
+        
+        # Above can be automatic
+        #sampler = EmbeddingComposite(DWaveSampler(solver="Advantage_system4.1"))
+
+        sampleset = sampler.sample_qubo(
+                Q,
+                num_reads=no_runs,
+                annealing_time=at
+        )
+
     return sampleset
+
+
+def display_sol(Vars, P, Q:dict, sol, energy, print_not_feasible:bool):
+
+    Vars.set_values(sol)
+
+    no_feasible = 0
+        
+    broken_pairs = Q.chech_feasibility_pair_constraint(Vars, P)
+    broken_sum = Q.check_feasibility_sum_constraint(Vars, P)
+
+    if broken_pairs == broken_sum == 0:
+        print(" ######################  feasible solution #########################")
+        print_schedule(Vars, P)
+        print("objective", Q.compute_objective(Vars, P))
+        print("energy", energy)
+        no_feasible += 1
+    elif print_not_feasible:
+        print(" ########################### not feasible ########################")
+        print("broken pair constraint", broken_pairs)
+        print("broken sum constraint", broken_sum)
+    
+    return no_feasible
 
 
 def check_solutions(Vars, P, Q:dict, solutions, print_not_feasible:bool = False):
     """ check solutions """
-    for (sol, energy, occ) in solutions:
-            
-        Vars.set_values(sol)
-        
-        broken_pairs = Q.chech_feasibility_pair_constraint(Vars, P)
-        broken_sum = Q.check_feasibility_sum_constraint(Vars, P)
+    if len(solutions[0]) == 4:
+        for (sol, energy, occ, chain_strength) in solutions:
+            no_feas = display_sol(Vars, P, Q, sol, energy, print_not_feasible)
 
-        if broken_pairs == broken_sum == 0:
-            print(" ######################  feasible solution #########################")
-            print_schedule(Vars, P)
-            print("objective", Q.compute_objective(Vars, P))
-            print("energy", energy)
-        elif print_not_feasible:
-            print(" ########################### not feasible ########################")
-            print("broken pair constraint", broken_pairs)
-            print("broken sum constraint", broken_sum)
+    elif len(solutions[0]) == 3:
+
+        for (sol, energy, occ) in solutions:
+            no_feas = display_sol(Vars, P, Q, sol, energy, print_not_feasible)
+    
+    print(no_feas, "feasible solutions out of", len(solutions))
+            
+
             
 
 

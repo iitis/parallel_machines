@@ -158,6 +158,6 @@ def test_solutions():
     assert broken_constraints == 1
 
 
-    solutions = solve_on_DWave(Q.qubo_terms, no_runs = 1, simulate = True)
+    solutions = solve_on_DWave(Q.qubo_terms, no_runs = 1, real = False)
 
     check_solutions(Vars, P, Q, solutions.record)

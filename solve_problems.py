@@ -1,5 +1,6 @@
 import pickle
 import argparse
+import numpy as np
 
 from parallel_machines import Job, Machine, Problem
 from parallel_machines import Variables, Implement_QUBO
@@ -107,7 +108,6 @@ def case4():
 
 if __name__ == "__main__":
 
-    save = True
 
     parser = argparse.ArgumentParser("mode of problem solving: computation /  output analysis")
 
@@ -119,10 +119,24 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--sim",
-        type=bool,
+        "--real",
         help="if True simulated annealing (via DWave software), if False real annealing",
-        default=True,
+        default=False,
+        action=argparse.BooleanOptionalAction,
+    )
+
+    parser.add_argument(
+        "--no_compute",
+        help="if True computations are not performed but only data are read from file",
+        default=False,
+        action=argparse.BooleanOptionalAction,
+    )
+
+    parser.add_argument(
+        "--at",
+        type=float,
+        help="annealing time for real device",
+        default=1.,
     )
 
     parser.add_argument(
@@ -148,9 +162,9 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--show_all",
-        type=bool,
         help="if True show all solutions, else show only feasible",
         default=False,
+        action=argparse.BooleanOptionalAction,
     )
 
     args = parser.parse_args()
@@ -172,19 +186,26 @@ if __name__ == "__main__":
     Vars = Variables(P)
     print("QUBO size = ", Vars.size)
     Q = Implement_QUBO(psum=args.psum, ppair=args.ppair, objective=lambda tau : tau**2)
+
+    # this will be expotencial objective
+    #Q = Implement_QUBO(psum=args.psum, ppair=args.ppair, objective=lambda tau : np.exp(tau))
     Q.make_QUBO(Vars, P)
 
-    file = f"parallel_machines/solutions/sim_case{args.case}.pkl"
-    if save:
-        solutions = solve_on_DWave(Q.qubo_terms, no_runs = args.no_runs, simulate = args.sim)
+    
+    file = f"parallel_machines/solutions/sim_case{args.case}_psum{round(args.psum)}_ppair{round(args.ppair)}.pkl"
+    if args.real:
+        file = file.replace("sim", f"real_at{args.at}")
+
+    if not args.no_compute:
+        solutions = solve_on_DWave(Q.qubo_terms, no_runs = args.no_runs, real= args.real, at = args.at)
 
         with open(file, 'wb') as fp:
-            pickle.dump(solutions, fp)
+            pickle.dump(solutions.record, fp)
 
     with open(file, 'rb') as fp:
-        solutions = pickle.load(fp)
+        sol = pickle.load(fp)
 
-    check_solutions(Vars, P, Q, solutions.record, print_not_feasible = args.show_all)
+    check_solutions(Vars, P, Q, sol, print_not_feasible = args.show_all)
 
 
         
