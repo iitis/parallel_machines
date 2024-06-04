@@ -24,16 +24,25 @@ python3 solve_problems.py --case 4 --no_runs 25 --psum 200 --ppair 100
 
 ```
 
+#### show all results also these not feasible
 
 ```
 python3 solve_problems.py --case 4 --no_runs 25 --psum 200 --ppair 100 --show_all
 
 ```
 
-to read file with data only:
+#### read file with data only:
 
 ```
 python3 solve_problems.py --case 4 --no_runs 25 --psum 200 --ppair 100 --no_compute
+
+```
+
+
+#### expotencial objective
+
+```
+python3 solve_problems.py --case 1 --no_runs 100 --psum 1000 --ppair 1000 --exp
 
 ```
 

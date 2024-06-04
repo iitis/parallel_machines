@@ -167,6 +167,13 @@ if __name__ == "__main__":
         action=argparse.BooleanOptionalAction,
     )
 
+    parser.add_argument(
+        "--exp",
+        help="if True uses expotencial objective",
+        default=False,
+        action=argparse.BooleanOptionalAction,
+    )
+
     args = parser.parse_args()
         
     if args.case == 1:
@@ -180,19 +187,24 @@ if __name__ == "__main__":
 
     if args.case == 4:
         P = case4()
-
-            
+     
             
     Vars = Variables(P)
     print("QUBO size = ", Vars.size)
-    Q = Implement_QUBO(psum=args.psum, ppair=args.ppair, objective=lambda tau : tau**2)
+    
 
-    # this will be exponential objective
-    #Q = Implement_QUBO(psum=args.psum, ppair=args.ppair, objective=lambda tau : np.exp(tau))
+    if args.exp:
+        Q = Implement_QUBO(psum=args.psum, ppair=args.ppair, objective=lambda tau : np.exp(tau))
+    else:
+        Q = Implement_QUBO(psum=args.psum, ppair=args.ppair, objective=lambda tau : tau**2)
+    
     Q.make_QUBO(Vars, P)
 
     
     file = f"parallel_machines/solutions/sim_case{args.case}_psum{round(args.psum)}_ppair{round(args.ppair)}.pkl"
+    if args.exp:
+        file = file.replace("case", "exp_case")
+
     if args.real:
         file = file.replace("sim", f"real_at{args.at}")
 

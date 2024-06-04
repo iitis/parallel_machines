@@ -292,40 +292,41 @@ def solve_on_DWave(Q:dict, no_runs:int, real:bool, at:float = 0.):
 
 
 def display_sol(Vars, P, Q:dict, sol, energy, print_not_feasible:bool):
+    """ checks feasibility and prints results """
 
     Vars.set_values(sol)
-
-    no_feasible = 0
-        
     broken_pairs = Q.chech_feasibility_pair_constraint(Vars, P)
     broken_sum = Q.check_feasibility_sum_constraint(Vars, P)
 
+    feasible = 0
     if broken_pairs == broken_sum == 0:
         print(" ######################  feasible solution #########################")
         print_schedule(Vars, P)
         print("objective", Q.compute_objective(Vars, P))
         print("energy", energy)
-        no_feasible += 1
+        feasible = 1
     elif print_not_feasible:
         print(" ########################### not feasible ########################")
         print("broken pair constraint", broken_pairs)
         print("broken sum constraint", broken_sum)
+        
+    return feasible
     
-    return no_feasible
 
 
 def check_solutions(Vars, P, Q:dict, solutions, print_not_feasible:bool = False):
     """ check solutions """
+    no_feasible = 0
     if len(solutions[0]) == 4:
         for (sol, energy, occ, chain_strength) in solutions:
-            no_feas = display_sol(Vars, P, Q, sol, energy, print_not_feasible)
+            no_feasible += display_sol(Vars, P, Q, sol, energy, print_not_feasible)
 
     elif len(solutions[0]) == 3:
 
         for (sol, energy, occ) in solutions:
-            no_feas = display_sol(Vars, P, Q, sol, energy, print_not_feasible)
+            no_feasible += display_sol(Vars, P, Q, sol, energy, print_not_feasible)
     
-    print(no_feas, "feasible solutions out of", len(solutions))
+    print(no_feasible, "feasible solutions out of", len(solutions))
             
 
             
