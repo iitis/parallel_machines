@@ -187,7 +187,7 @@ if __name__ == "__main__":
     print("QUBO size = ", Vars.size)
     Q = Implement_QUBO(psum=args.psum, ppair=args.ppair, objective=lambda tau : tau**2)
 
-    # this will be expotencial objective
+    # this will be exponential objective
     #Q = Implement_QUBO(psum=args.psum, ppair=args.ppair, objective=lambda tau : np.exp(tau))
     Q.make_QUBO(Vars, P)
 
