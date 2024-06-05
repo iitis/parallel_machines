@@ -159,7 +159,7 @@ class Implement_QUBO():
 
 
     def sum_constraint(self, Vars):
-        """ add sum constraints  and return dict of corresponding mulitindices"""
+        """ add sum constraints  and return dict of corresponding multi indices"""
         inds_multiinds_same ={}
         inds_multiinds_different ={}
         for k, (t,m,j) in Vars.multiindices.items():
@@ -177,7 +177,7 @@ class Implement_QUBO():
     
 
     def pair_constraint(self, Vars, P):
-        """ add pair constraints  and return dict of corresponding mulitindices """
+        """ add pair constraints  and return dict of corresponding multi indices """
         inds_multiinds ={}
         for k, (t,m,j) in Vars.multiindices.items():
             for kp, (tp,mp,jp) in Vars.multiindices.items():
@@ -208,7 +208,7 @@ class Implement_QUBO():
         self.objective(Vars, P)
 
 
-    # these functions are for analysis of solutions
+    # These functions are for the analysis of solutions
 
     def chech_feasibility_pair_constraint(self, Vars, P) -> int:
         """ 
