@@ -5,14 +5,14 @@ In ```parallel_machines```  the problems of scheduling on parallel machines are 
 
 ## Arguments:
 
---case - default ```1``` - problem cases ```1``` to ```4``` determining various scheduling problems in increasing size
---runs  - default ```4``` - number of runs on quantum or simulated device
---real - by default: ```False``` - use real annealing if true or simullated one if false
---at - by default ```1.```, annealing time [in \mu s] for real annelaing
---show_all -by default: ```False``` - show also not feasible solutions
---psum  - by default ```100.``` - sum penalty
---ppair - by default ```100.``` - pair penalty
---no_compute by default ```False```, if ```True``` computaiton is not performed
+- --case - default ```1``` - problem cases ```1``` to ```4``` determining various scheduling problems in increasing size
+- --runs  - default ```4``` - number of runs on quantum or simulated device
+- --real - by default: ```False``` - use real annealing if true or simullated one if false
+- --at - by default ```1.```, annealing time [in \mu s] for real annelaing
+- --show_all -by default: ```False``` - show also not feasible solutions
+- --psum  - by default ```100.``` - sum penalty
+- --ppair - by default ```100.``` - pair penalty
+- --no_compute by default ```False```, if ```True``` computaiton is not performed
 
 
 ## Example use 
