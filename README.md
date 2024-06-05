@@ -13,7 +13,7 @@ In ```parallel_machines```  the problems of scheduling on parallel machines are 
 - --psum  - by default ```100.``` - sum penalty
 - --ppair - by default ```100.``` - pair penalty
 - --no_compute by default ```False```, if ```True``` computaiton is not performed
-- --exp -by default: ```False``` - use expotnecial objective
+- --exp -by default: ```False``` - if ```True``` use exponential objective otherwise use quadratic objective
 
 
 ## Example use 
