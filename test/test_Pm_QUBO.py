@@ -42,7 +42,7 @@ def test_jobs_machines_variables():
 
     assert Vars.size == 11
 
-    assert Vars.get_k_and_varval(t_check=3,m_check=1,j_check=2) == (5, -1)
+    assert Vars.get_k_and_varval(t_in=3,m_in=1,j_in=2) == (5, -1)
 
 
 def test_qubo_implementation():

@@ -4,6 +4,8 @@ from copy import deepcopy
 import itertools
 import neal
 
+# these are D-Wave modules
+
 from dwave.system import EmbeddingComposite, DWaveSampler
 from dwave.system.composites import FixedEmbeddingComposite
 from minorminer import find_embedding
@@ -90,6 +92,7 @@ class QUBO_var():
 class Variables():
     """ class of QUBO variables """
     def __init__(self, P):
+        # t,m,j multiindex
         self.multiindices = self.make_multiindices(P)
         self.q_vars = {}
         for k, (t,m,j) in self.multiindices.items():
@@ -100,14 +103,16 @@ class Variables():
 
     
     def make_multiindices(self, P) -> dict:
-        """ return dict of multi indices given the problem class """
+        """ return dict of multi indices given the problem class 
+        k -> (t,m,j)
+        """
         multiindices = {}
         k = 0
         for m_id, m in P.machines.items():
             for j_id, j in P.jobs.items():
                 for t in range(P.tmax+1):
-                    m = P.machines[m_id]
-                    if t >= j.release_t and t >= m.occupied_till:  # check r_j, brkdw
+                    # check r_j, brkdw - and create only variables if these are fulfilled
+                    if t >= j.release_t and t >= m.occupied_till:
                         k += 1
                         multiindices[k] = (t, m_id, j_id)
         return multiindices
@@ -121,10 +126,10 @@ class Variables():
             self.q_vars[i+1].value = v  # renumbering, Python is form 0
                         
         
-    def get_k_and_varval(self, t_check:int, m_check:int, j_check:int):
+    def get_k_and_varval(self, t_in:int, m_in:int, j_in:int):
         """ return index and [0,1] value of the QUBO variable of t_check,m_check,j_check """
         for k, (t,m,j) in self.multiindices.items():
-            if (t,m,j) == (t_check,m_check,j_check):
+            if (t,m,j) == (t_in, m_in,j_in):
                 return k, self.q_vars[k].value
         return -1, -1
     
@@ -154,7 +159,7 @@ class Implement_QUBO():
 
 
     def sum_constraint(self, Vars):
-        """ """
+        """ add sum constraints  and return dict of corresponding mulitindices"""
         inds_multiinds_same ={}
         inds_multiinds_different ={}
         for k, (t,m,j) in Vars.multiindices.items():
@@ -172,7 +177,7 @@ class Implement_QUBO():
     
 
     def pair_constraint(self, Vars, P):
-        """ """
+        """ add pair constraints  and return dict of corresponding mulitindices """
         inds_multiinds ={}
         for k, (t,m,j) in Vars.multiindices.items():
             for kp, (tp,mp,jp) in Vars.multiindices.items():
@@ -190,7 +195,7 @@ class Implement_QUBO():
     
 
     def objective(self, Vars, P):
-        """ add objective terms to QUBO terms """
+        """ add objective terms to QUBO """
         for k, (t,m,j) in Vars.multiindices.items():
             weight = P.jobs[j].priority
             penalty = weight*self.obj(t + P.jobs[j].process_t - P.jobs[j].release_t)
@@ -202,6 +207,8 @@ class Implement_QUBO():
         self.pair_constraint(Vars, P)
         self.objective(Vars, P)
 
+
+    # these functions are for analysis of solutions
 
     def chech_feasibility_pair_constraint(self, Vars, P) -> int:
         """ 
