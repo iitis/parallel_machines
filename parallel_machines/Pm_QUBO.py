@@ -3,10 +3,11 @@
 from copy import deepcopy
 import itertools
 import neal
+import dimod
 
 # these are D-Wave modules
 
-from dwave.system import EmbeddingComposite, DWaveSampler
+from dwave.system import EmbeddingComposite, DWaveSampler, LeapHybridSampler
 from dwave.system.composites import FixedEmbeddingComposite
 from minorminer import find_embedding
 
@@ -256,9 +257,16 @@ class Implement_QUBO():
 
 # https://docs.ocean.dwavesys.com/projects/neal/en/latest/
 
-def solve_on_DWave(Q:dict, no_runs:int, real:bool, at:float = 0.):
+def solve_on_DWave(Q:dict, no_runs:int, real:bool, hyb:bool, at:float = 0.):
     """ Solve  QUBO in Q on the D-Wave  """
-    if not real:
+
+    if hyb:
+        bqm = dimod.BQM.from_qubo(Q)
+
+        sampler = LeapHybridSampler()
+        #sampler.properties["minimum_time_limit_s"]  = 5 # by default it is 5, and can be set
+        sampleset = sampler.sample(bqm)
+    elif not real:
         s = neal.SimulatedAnnealingSampler()
         sampleset = s.sample_qubo(
             Q, beta_range = (0.01, 10), num_sweeps = 200,
@@ -294,6 +302,7 @@ def solve_on_DWave(Q:dict, no_runs:int, real:bool, at:float = 0.):
                 num_reads=no_runs,
                 annealing_time=at
         )
+
 
     return sampleset
 

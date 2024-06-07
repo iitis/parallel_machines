@@ -126,6 +126,13 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--hyb",
+        help="if True use hybrid solver (BQM)",
+        default=False,
+        action=argparse.BooleanOptionalAction,
+    )
+
+    parser.add_argument(
         "--no_compute",
         help="if True computations are not performed but only data are read from file",
         default=False,
@@ -143,7 +150,7 @@ if __name__ == "__main__":
         "--no_runs",
         type=int,
         help="number of runs on the simulated or real device",
-        default=4,
+        default=1,
     )
 
     parser.add_argument(
@@ -205,11 +212,16 @@ if __name__ == "__main__":
     if args.exp:
         file = file.replace("case", "exp_case")
 
-    if args.real:
+    if args.hyb:
+        file = file.replace("sim", f"hyb_bqm")
+
+    elif args.real:
         file = file.replace("sim", f"real_at{args.at}")
 
+
+
     if not args.no_compute:
-        solutions = solve_on_DWave(Q.qubo_terms, no_runs = args.no_runs, real= args.real, at = args.at)
+        solutions = solve_on_DWave(Q.qubo_terms, no_runs = args.no_runs, real= args.real, hyb=args.hyb, at = args.at)
 
         with open(file, 'wb') as fp:
             pickle.dump(solutions.record, fp)
