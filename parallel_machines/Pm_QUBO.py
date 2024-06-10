@@ -2,6 +2,12 @@
 
 from copy import deepcopy
 import itertools
+from operator import itemgetter
+import numpy as np
+
+import matplotlib
+import matplotlib.pyplot as plt
+
 import neal
 import dimod
 
@@ -307,45 +313,78 @@ def solve_on_DWave(Q:dict, no_runs:int, real:bool, hyb:bool, at:float = 0.):
     return sampleset
 
 
-def display_sol(Vars, P, Q:dict, sol, energy, print_not_feasible:bool):
-    """ checks feasibility and prints results """
-
+def analyze_sol(Vars, P, Q:dict, sol):
+    """ compute n.o. broken constraints and the objective """
     Vars.set_values(sol)
+
     broken_pairs = Q.chech_feasibility_pair_constraint(Vars, P)
     broken_sum = Q.check_feasibility_sum_constraint(Vars, P)
 
-    feasible = 0
-    if broken_pairs == broken_sum == 0:
-        print(" ######################  feasible solution #########################")
-        print_schedule(Vars, P)
-        print("objective", Q.compute_objective(Vars, P))
-        print("energy", energy)
-        feasible = 1
-    elif print_not_feasible:
-        print(" ########################### not feasible ########################")
-        print("broken pair constraint", broken_pairs)
-        print("broken sum constraint", broken_sum)
-        
-    return feasible
-    
+    obj = Q.compute_objective(Vars, P)
+
+    return broken_pairs, broken_sum, obj
 
 
-def check_solutions(Vars, P, Q:dict, solutions, print_not_feasible:bool = False):
-    """ check solutions """
-    no_feasible = 0
+
+
+
+def dict_of_solutions(Vars, P, Q:dict, solutions, print_not_feasible:bool):
+    """ checks feasibility and return the dict of feasible sols """
+    sols = []
+
     if len(solutions[0]) == 4:
         for (sol, energy, occ, chain_strength) in solutions:
-            no_feasible += display_sol(Vars, P, Q, sol, energy, print_not_feasible)
+
+            broken_pairs, broken_sum, obj = analyze_sol(Vars, P, Q, sol)
+            our_sol = {"broken_constr": broken_pairs+broken_sum, "obj": obj, "sol": sol}
+            sols.append(our_sol)
+
+            if print_not_feasible:
+                print("...............")
+                print("broken pair constraint", broken_pairs)
+                print("broken sum constraint", broken_sum)
 
     elif len(solutions[0]) == 3:
 
         for (sol, energy, occ) in solutions:
-            no_feasible += display_sol(Vars, P, Q, sol, energy, print_not_feasible)
-    
-    print(no_feasible, "feasible solutions out of", len(solutions))
-            
 
-            
+            broken_pairs, broken_sum, obj = analyze_sol(Vars, P, Q, sol)
+            our_sol = {"broken_constr": broken_pairs+broken_sum, "obj": obj, "sol": sol}
+            sols.append(our_sol)
+
+            if print_not_feasible:
+                print("...............")
+                print("broken pair constraint", broken_pairs)
+                print("broken sum constraint", broken_sum)
+
+    return sols
+
+
+
+def sort_sols(sols):
+    """ filter out non-feasible solutions and sort solutuons according to objective """
+    Y = list( filter(lambda x : x["broken_constr"] == 0, sols) )
+    newlist = sorted(Y, key=itemgetter('obj'))
+
+    print(len(newlist), "feasible solutions out of", len(sols))
+
+    return newlist
+
+
+
+def display_sols(Vars, P, sols):
+    """ checks feasibility and prints results """
+
+    for sol in sols:
+
+        Vars.set_values(sol["sol"])
+
+        print(" ####  feasible solution ###", "objective = ", sol["obj"])
+        print_schedule(Vars, P)
+
+        #plot_schedule(Vars, P)
+        
+
 
 
 def print_schedule(Vars, P):
@@ -357,5 +396,33 @@ def print_schedule(Vars, P):
         print("release time", job.release_t)
         print("  start time", job.start)
         print("  end   time", job.end)        
+
+
+
+def plot_schedule(Vars, P):
+
+    jobs = []
+    machines = []
+    time_start = []
+    time_durations = []
+    for job in P.jobs.values():
+        job = deepcopy(job)
+        job.set_processing(Vars)
+        jobs.append(job.id)
+        machines.append(job.machine)
+        print("release time", job.release_t)
+        time_start.append(job.start)
+        time_durations.append(job.process_t)
+
+    
+    color = ['green', 'lightblue', 'blue', 'purple', 'red', 'black', 'gray', 'brown', 'yellow', 'orange', 'navy', 'darkgray']
+
+    plt.title(f"{P.no_jobs} jobs, {P.no_machines} machines")
+    plt.yticks(machines)
+    plt.ylabel("machine")
+    plt.xlabel("time")
+    plt.xticks([i for i in range(P.tmax+1+np.max(time_durations))])
+    plt.barh(y=machines, width=time_durations, left=time_start, color = color)
+    plt.show()
 
 

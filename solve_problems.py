@@ -4,7 +4,7 @@ import numpy as np
 
 from parallel_machines import Job, Machine, Problem
 from parallel_machines import Variables, Implement_QUBO
-from parallel_machines import solve_on_DWave, check_solutions
+from parallel_machines import solve_on_DWave, dict_of_solutions, sort_sols, display_sols
 
 
 
@@ -229,7 +229,13 @@ if __name__ == "__main__":
     with open(file, 'rb') as fp:
         sol = pickle.load(fp)
 
-    check_solutions(Vars, P, Q, sol, print_not_feasible = args.show_all)
+    D = dict_of_solutions(Vars, P, Q, solutions.record, print_not_feasible = args.show_all)
+
+
+    newdict = sort_sols(D)
+
+    display_sols(Vars, P, newdict)
+
 
 
         

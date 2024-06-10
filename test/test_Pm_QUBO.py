@@ -2,7 +2,7 @@ import pytest
 
 from parallel_machines import Job, Machine, Problem
 from parallel_machines import Variables, Implement_QUBO
-from parallel_machines import solve_on_DWave, check_solutions
+from parallel_machines import solve_on_DWave, dict_of_solutions, sort_sols, display_sols
 
 
 def test_jobs_machines_variables():
@@ -158,6 +158,20 @@ def test_solutions():
     assert broken_constraints == 1
 
 
-    solutions = solve_on_DWave(Q.qubo_terms, no_runs = 1, real = False, hyb = False)
+    solutions = solve_on_DWave(Q.qubo_terms, no_runs = 2, real = False, hyb = False)
 
-    check_solutions(Vars, P, Q, solutions.record)
+    D = dict_of_solutions(Vars, P, Q, solutions.record, print_not_feasible = False)
+
+    assert len(D) == 2
+    assert len(D[0]['sol']) == 11
+    assert D[0]['broken_constr'] == 0
+    assert D[0]['obj'] < 10
+
+    newdict = sort_sols(D)
+
+    assert len(newdict) == 2
+
+    print(newdict[0]['obj']  <= newdict[1]['obj'] )
+
+    display_sols(Vars, P, newdict)
+
