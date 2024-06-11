@@ -173,5 +173,5 @@ def test_solutions():
 
     print(newdict[0]['obj']  <= newdict[1]['obj'] )
 
-    display_sols(Vars, P, newdict)
+    display_sols(Vars, P, newdict, plot_item=1)
 

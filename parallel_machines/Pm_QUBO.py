@@ -384,7 +384,7 @@ def display_sols(Vars, P, sols, plot_item):
 
         if i+1 == plot_item:
 
-            plot_schedule(Vars, P, plot_item)
+            plot_schedule(Vars, P, round(sol["obj"], 2), plot_item)
         
 
 
@@ -401,7 +401,7 @@ def print_schedule(Vars, P):
 
 
 
-def plot_schedule(Vars, P, plot_item):
+def plot_schedule(Vars, P, obj, plot_item):
 
     delta = 0.1
 
@@ -420,7 +420,7 @@ def plot_schedule(Vars, P, plot_item):
     
     color = ['green', 'lightblue', 'blue', 'purple', 'red', 'black', 'gray', 'brown', 'yellow', 'orange', 'navy', 'darkgray']
 
-    plt.title(f"{P.no_jobs} jobs, {P.no_machines} machines, item =  {plot_item}")
+    plt.title(f"{P.no_jobs} jobs, {P.no_machines} machines, item =  {plot_item}  objective = {obj}")
     plt.yticks(machines)
     plt.ylabel("machine")
     plt.xlabel("time")

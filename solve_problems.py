@@ -230,13 +230,16 @@ if __name__ == "__main__":
     if not args.no_compute:
         solutions = solve_on_DWave(Q.qubo_terms, no_runs = args.no_runs, real= args.real, hyb=args.hyb, at = args.at)
 
+        sol = solutions.record
+
         with open(file, 'wb') as fp:
-            pickle.dump(solutions.record, fp)
+            pickle.dump(sol, fp)
+
 
     with open(file, 'rb') as fp:
         sol = pickle.load(fp)
 
-    D = dict_of_solutions(Vars, P, Q, solutions.record, print_not_feasible = args.show_all)
+    D = dict_of_solutions(Vars, P, Q, sol, print_not_feasible = args.show_all)
 
 
     newdict = sort_sols(D)
