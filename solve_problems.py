@@ -147,6 +147,13 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "--plot_item",
+        type=int,
+        help="number of realisation to be plot",
+        default=0,
+    )
+
+    parser.add_argument(
         "--no_runs",
         type=int,
         help="number of runs on the simulated or real device",
@@ -234,7 +241,9 @@ if __name__ == "__main__":
 
     newdict = sort_sols(D)
 
-    display_sols(Vars, P, newdict)
+    
+
+    display_sols(Vars, P, newdict, args.plot_item)
 
 
 

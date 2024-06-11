@@ -8,8 +8,9 @@ In ```parallel_machines```  the problems of scheduling on parallel machines are 
 --case - default ```1``` - problem cases ```1``` to ```4``` determining various scheduling problems in increasing size
 --runs  - default ```1``` - number of runs on quantum or simulated device
 --real - by default: ```False``` - use real annealing if ```True``` or simullated one if ```False```
---real - by default: ```False``` - use hybrid bqm solver if ```True```
+--hyb - by default: ```False``` - use hybrid bqm solver if ```True```
 --at - by default ```1.```, annealing time [in \mu s] for real annelaing
+--plot_item - by default ```0```, number of item to be plot (items are feasible and sorted due to objective)
 --show_all -by default: ```False``` - show also not feasible solutions
 --psum  - by default ```100.``` - sum penalty
 --ppair - by default ```100.``` - pair penalty

@@ -372,17 +372,19 @@ def sort_sols(sols):
 
 
 
-def display_sols(Vars, P, sols):
+def display_sols(Vars, P, sols, plot_item):
     """ checks feasibility and prints results """
 
-    for sol in sols:
+    for i, sol in enumerate(sols):
 
         Vars.set_values(sol["sol"])
 
         print(" ####  feasible solution ###", "objective = ", sol["obj"])
         print_schedule(Vars, P)
 
-        #plot_schedule(Vars, P)
+        if i+1 == plot_item:
+
+            plot_schedule(Vars, P, plot_item)
         
 
 
@@ -399,7 +401,9 @@ def print_schedule(Vars, P):
 
 
 
-def plot_schedule(Vars, P):
+def plot_schedule(Vars, P, plot_item):
+
+    delta = 0.1
 
     jobs = []
     machines = []
@@ -410,19 +414,19 @@ def plot_schedule(Vars, P):
         job.set_processing(Vars)
         jobs.append(job.id)
         machines.append(job.machine)
-        print("release time", job.release_t)
         time_start.append(job.start)
         time_durations.append(job.process_t)
 
     
     color = ['green', 'lightblue', 'blue', 'purple', 'red', 'black', 'gray', 'brown', 'yellow', 'orange', 'navy', 'darkgray']
 
-    plt.title(f"{P.no_jobs} jobs, {P.no_machines} machines")
+    plt.title(f"{P.no_jobs} jobs, {P.no_machines} machines, item =  {plot_item}")
     plt.yticks(machines)
     plt.ylabel("machine")
     plt.xlabel("time")
     plt.xticks([i for i in range(P.tmax+1+np.max(time_durations))])
-    plt.barh(y=machines, width=time_durations, left=time_start, color = color)
+    plt.barh(y=machines, width=np.array(time_durations)-delta, left=time_start, color = color, label = jobs)
+    plt.legend()
     plt.show()
 
 
