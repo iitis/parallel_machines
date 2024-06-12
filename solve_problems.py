@@ -54,7 +54,7 @@ def case2():
 def case3():
     """ tmax = 12  #m = 3, #j = 10"""
     
-    P = Problem(tmax = 12)
+    P = Problem(tmax = 10)
     machines_list = (Machine(1),Machine(2), Machine(3))
     P.add_machines(machines_list)
 
