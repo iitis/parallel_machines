@@ -67,7 +67,7 @@ python3 solve_problems.py --case 1 --no_runs 1000 --psum 10000 --ppair 10000 --e
 ### Real annealing
 
 ```
-python3 solve_problems.py --case 1 --no_runs 4 --psum 100 --ppair 100 --real --at 1.
+python3 solve_problems.py --case 1 --no_runs 4 --psum 100 --ppair 100 --real --at 1
 
 ```
 
