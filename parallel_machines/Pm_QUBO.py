@@ -268,8 +268,9 @@ def solve_on_DWave(Q:dict, no_runs:int, real:bool, hyb:bool, at:float = 0.):
 
     if hyb:
         bqm = dimod.BQM.from_qubo(Q)
-
         sampler = LeapHybridSampler()
+
+        # sampler = LeapHybridSampler(tokel = "") one can add there token from D-Wave account
         #sampler.properties["minimum_time_limit_s"]  = 5 # by default it is 5, and can be set
         sampleset = sampler.sample(bqm)
     elif not real:
@@ -281,6 +282,8 @@ def solve_on_DWave(Q:dict, no_runs:int, real:bool, hyb:bool, at:float = 0.):
     else:
 
         solver = DWaveSampler(solver="Advantage_system4.1")
+
+        #solver = DWaveSampler(solver="Advantage_system4.1", token="")  one can add there token from D-Wave account
 
         __, target_edgelist, _ = solver.structure
 
@@ -301,7 +304,8 @@ def solve_on_DWave(Q:dict, no_runs:int, real:bool, hyb:bool, at:float = 0.):
         sampler = FixedEmbeddingComposite(solver, emb)
         
         # Above can be automatic
-        #sampler = EmbeddingComposite(DWaveSampler(solver="Advantage_system4.1"))
+        #sampler = EmbeddingComposite(DWaveSampler(solver="Advantage_system4.1", , token=""))
+
 
         sampleset = sampler.sample_qubo(
                 Q,
@@ -361,7 +365,7 @@ def dict_of_solutions(Vars, P, Q:dict, solutions, print_not_feasible:bool):
 
 
 
-def sort_sols(sols):
+def sort_sols(sols: list):
     """ filter out non-feasible solutions and sort solutuons according to objective """
     Y = list( filter(lambda x : x["broken_constr"] == 0, sols) )
     newlist = sorted(Y, key=itemgetter('obj'))
@@ -372,8 +376,8 @@ def sort_sols(sols):
 
 
 
-def display_sols(Vars, P, sols, plot_item):
-    """ checks feasibility and prints results """
+def display_sols(Vars, P, sols: list, plot_item: int):
+    """ checks feasibility, prints and plots selected result """
 
     for i, sol in enumerate(sols):
 
@@ -390,6 +394,7 @@ def display_sols(Vars, P, sols, plot_item):
 
 
 def print_schedule(Vars, P):
+    """ print table of schedule """
     for job in P.jobs.values():
         job = deepcopy(job)
         job.set_processing(Vars)
@@ -401,7 +406,7 @@ def print_schedule(Vars, P):
 
 
 
-def plot_schedule(Vars, P, obj, plot_item):
+def plot_schedule(Vars, P, obj: float, plot_item: int):
 
     delta = 0.1
 
@@ -418,14 +423,14 @@ def plot_schedule(Vars, P, obj, plot_item):
         time_durations.append(job.process_t)
 
     
-    color = ['green', 'lightblue', 'blue', 'purple', 'red', 'black', 'gray', 'brown', 'yellow', 'orange', 'navy', 'darkgray']
+    color = ['green', 'black', 'gray' , 'blue', 'orange', 'red', 'brown', 'purple', 'lightblue', 'yellow', 'navy', 'darkgray', 'lightgray', 'cyan']
 
     plt.title(f"{P.no_jobs} jobs, {P.no_machines} machines, item =  {plot_item}  objective = {obj}")
     plt.yticks(machines)
     plt.ylabel("machine")
     plt.xlabel("time")
     plt.xticks([i for i in range(P.tmax+1+np.max(time_durations))])
-    plt.barh(y=machines, width=np.array(time_durations)-delta, left=time_start, color = color, label = jobs)
+    plt.barh(y=machines, height=0.3, width=np.array(time_durations)-delta, left=time_start, color = color, label = jobs)
     plt.legend()
     plt.show()
 

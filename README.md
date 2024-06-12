@@ -5,7 +5,7 @@ In ```parallel_machines```  the problems of scheduling on parallel machines are 
 
 ## Arguments:
 
---case - default ```1``` - problem cases ```1``` to ```4``` determining various scheduling problems in increasing size
+--case - default ```1``` - problem cases ```1``` to ```5``` determining various scheduling problems in increasing size
 --runs  - default ```1``` - number of runs on quantum or simulated device
 --real - by default: ```False``` - use real annealing if ```True``` or simullated one if ```False```
 --hyb - by default: ```False``` - use hybrid bqm solver if ```True```
@@ -20,6 +20,11 @@ In ```parallel_machines```  the problems of scheduling on parallel machines are 
 ## Example use 
 
 ### Simulated annealing
+
+```
+python3 solve_problems.py --case 1 --no_runs 100 --psum 100 --ppair 50
+
+```
 
 ```
 python3 solve_problems.py --case 4 --no_runs 25 --psum 200 --ppair 100
@@ -39,6 +44,15 @@ python3 solve_problems.py --case 4 --no_runs 25 --psum 200 --ppair 100 --show_al
 python3 solve_problems.py --case 4 --no_runs 25 --psum 200 --ppair 100 --no_compute
 
 ```
+
+#### plot chart of ```--plot_item``` realisation
+
+
+```
+python3 solve_problems.py --case 1 --no_runs 25 --psum 200 --ppair 100 --plot_item 1
+
+```
+
 
 
 #### expotencial objective

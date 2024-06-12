@@ -105,6 +105,36 @@ def case4():
     return P
 
 
+def case5():
+    """ tmax = 20  #m = 5, #j = 14"""
+    P = Problem(tmax = 12)
+    machines_list = (Machine(1),Machine(2), Machine(3), Machine(4), Machine(5))
+    P.add_machines(machines_list)
+
+    P.machine_occupation(1, occupied_till=4)
+    P.machine_occupation(3, occupied_till=1)
+        
+    jobs_list = (Job(id=1, release_t=0, process_t=1, priority=0.2),
+                Job(id=2, release_t=2, process_t=2, priority=0.2),
+                Job(id=3, release_t=2, process_t=3, priority=0.2),
+                Job(id=4, release_t=1, process_t=3, priority=0.2),
+                Job(id=5, release_t=0, process_t=5, priority=0.2),
+                Job(id=6, release_t=5, process_t=2, priority=0.2),
+                Job(id=7, release_t=0, process_t=5, priority=0.2),
+                Job(id=8, release_t=0, process_t=4, priority=0.8),
+                Job(id=9, release_t=1, process_t=3, priority=0.8),
+                Job(id=10, release_t=2, process_t=3, priority=0.8),
+                Job(id=11, release_t=5, process_t=2, priority=0.8),
+                Job(id=12, release_t=0, process_t=6, priority=0.8),
+                Job(id=13, release_t=1, process_t=8, priority=0.8),
+                Job(id=14, release_t=1, process_t=7, priority=0.8),
+                )
+            
+    P.add_jobs(jobs_list)
+
+    return P
+
+
 
 if __name__ == "__main__":
 
@@ -201,6 +231,9 @@ if __name__ == "__main__":
 
     if args.case == 4:
         P = case4()
+
+    if args.case == 5:
+        P = case5()
      
             
     Vars = Variables(P)
